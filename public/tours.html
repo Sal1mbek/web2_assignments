@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tours List</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <a class="navbar-brand" href="#">Travel Agency By Salimbbek</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="index.html">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/tours.html">Tours</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Container for Tour List -->
+    <div class="container mt-5">
+        <h1>Available Tours</h1>
+
+        <ul id="tourList" class="list-group">
+            <!-- Tours will be dynamically added here -->
+        </ul>
+
+        <div id="resultContainer" style="margin-top: 20px;"></div>
+
+        <div id="weatherResultContainer" style="margin-top: 20px;"></div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        // Function to fetch and display tours
+        async function fetchTours() {
+            try {
+                const response = await fetch('/api/tours');
+                const tours = await response.json();
+
+                const tourList = document.getElementById('tourList');
+                tourList.innerHTML = ''; // Clear existing tour list
+
+                // Iterate through tours and create list items
+                tours.forEach(tour => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'list-group-item';
+                    listItem.innerHTML = `
+                        <h5>${tour.name}</h5>
+                        <p>Cost: $${tour.cost}</p>
+                        <p>Destination: ${tour.destination}</p>
+                        <button class="btn btn-primary" onclick="showTour(${JSON.stringify(tours)})">Show Tour</button>
+                    `;
+                    tourList.appendChild(listItem);
+                });
+            } catch (error) {
+                console.error('Error fetching tours:', error.message);
+            }
+        }
+
+        // Function to show tour details
+        async function showTour(tours) {
+            try {
+                const resultContainer = document.getElementById('resultContainer');
+                resultContainer.innerHTML = `
+                    <h2>Your Trip Details</h2>
+                    <p>Destination: ${tour.destination}</p>
+                `;
+
+                const response = await fetch(`http://localhost:3000/weather?city=${tour.destination}`);
+                const weatherData = await response.json();
+
+                const weatherResultContainer = document.getElementById('weatherResultContainer');
+                weatherResultContainer.innerHTML = `
+                    <h2>Weather Information</h2>
+                    <p>Condition: ${weatherData.condition}</p>
+                    <p>Temperature: ${weatherData.temperature.toFixed(2)}°C</p>
+                    <p>Clouds: ${weatherData.clouds}%</p>
+                `;
+            } catch (error) {
+                console.error('Error fetching tour details:', error.message);
+            }
+        }
+
+        // Fetch tours when the page loads
+        fetchTours();
+    </script>
+</body>
+</html>
