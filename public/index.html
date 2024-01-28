@@ -7,9 +7,11 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="R.png" type="image/x-icon">
 </head>
-<body>
 
+
+<body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <a class="navbar-brand" href="#">Travel Agency By Salimbbek</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
@@ -29,11 +31,13 @@
     </nav>
 
     <div class="container mt-5">
-        <h1>Welcome to Travel Agency</h1>
-        <p>Plan your dream vacation with us!</p>
-        <p>Whether you're looking for an adventurous trek in the mountains, a relaxing beach getaway, or a cultural exploration of vibrant cities, we've got you covered.</p>
-        <p>Use the form below to start planning your trip, and don't forget to check out our curated list of available tours for inspiration!</p>
-        <p>Move to the navbar "Tours" page to see available tours</p>
+        <div class="container">
+            <h1 class="text-center">Welcome to Travel Agency</h1>
+            <p class="display-4 text-center">Plan your dream vacation with us!</p>
+            <p class="lead font-weight-bold">Whether you're looking for an adventurous trek in the mountains, a relaxing beach getaway, or a cultural exploration of vibrant cities, we've got you covered.</p>
+            <p class="lead font-weight-bold">Use the form below to start planning your trip, and don't forget to check out our curated list of available tours for inspiration!</p>
+            <p class="lead font-weight-bold">Move to the navbar "Tours" page to see available tours</p>
+        </div>
 
         <form id="travelForm">
             <h2>Adding new Tours</h2>
@@ -44,36 +48,26 @@
                 </div>
                 <div class="form-group col-md-3">
                     <label for="tourCost">Tour Cost</label>
-                    <input type="number" class="form-control" id="tourCost" min="1" value="1" required>
+                    <input type="number" class="form-control" id="tourCost" placeholder="1$" min="1" value="1$" required>
                 </div>
                 <div class="form-group col-md-3">
                     <label for="tourDestination">Tour Destination</label>
-                    <input type="text" class="form-control" id="tourDestination" placeholder="Tour Destination" required>
+                    <select class="form-control" id="tourDestination" required>
+                        <option value="" selected disabled>Select country</option>
+                        <option value="New York">New York</option>
+                        <option value="Los Angeles">Los Angeles</option>
+                        <option value="Chicago">Chicago</option>
+                        <option value="Houston">Houston</option>
+                        <option value="London">London</option>
+                        <option value="Manchester">Manchester</option>
+                        <option value="Birmingham">Birmingham</option>
+                        <option value="Liverpool">Liverpool</option>
+                        <option value="Glasgow">Glasgow</option>
+                        <option value="Edinburgh">Edinburgh</option>
+                    </select>
                 </div>
                 <div class="form-group col-md-2">
                     <button type="button" class="btn btn-success" onclick="addTour()">Add Tour</button>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group col-md-4">
-                    <label for="goingTo">Going to</label>
-                    <input type="text" class="form-control" id="goingTo" placeholder="Destination" required>
-                </div>
-                <div class="form-group col-md-3">
-                    <label for="dates">Dates</label>
-                    <input type="text" class="form-control datepicker" id="dates" placeholder="MM/DD/YYYY" required>
-                </div>
-                <div class="form-group col-md-2">
-                    <label for="adults">Adults</label>
-                    <input type="number" class="form-control" id="adults" min="1" value="1" required>
-                </div>
-                <div class="form-group col-md-2">
-                    <label for="children">Children</label>
-                    <input type="number" class="form-control" id="children" min="0" value="0" required>
-                </div>
-                <div class="form-group col-md-1">
-                    <button type="button" class="btn btn-primary" onclick="showTour()">Show Tour</button>
                 </div>
             </div>
         </form>
@@ -84,35 +78,9 @@
 
     </div>
 
-    <footer class="footer">
+    <footer class="footer bg-dark">
         <p>© 2024 Salimbek Kairbekov | SE-2209</p>
-    </footer>
-
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
-
-    <script>
-        function calculateTourCost() {
-            const adults = parseInt(document.getElementById('adults').value);
-            const children = parseInt(document.getElementById('children').value);
-    
-            const adultPrice = 500; // $500 per adult
-            const childPrice = 300; // $300 per child
-    
-            const totalCost = (adults * adultPrice) + (children * childPrice);
-    
-            const totalCostContainer = document.getElementById('totalCost');
-            totalCostContainer.innerText = `Total Cost: $${totalCost}`;
-        }
-    
-       document.getElementById('travelForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-    
-            calculateTourCost();
-        });
-    </script>
+    </footer>    
 
     <script>
         $(document).ready(function () {
@@ -124,62 +92,31 @@
     </script>
 
     <script>
-        async function showTour() {
-            const goingTo = document.getElementById('goingTo').value;
-            const dates = document.getElementById('dates').value;
-            const adults = document.getElementById('adults').value;
-            const children = document.getElementById('children').value;
-
-            const adultPrice = 500; // $500 per adult
-            const childPrice = 300; // $300 per child
-            const totalPrice = (parseInt(adults) * adultPrice) + (parseInt(children) * childPrice);
-
-            const resultContainer = document.getElementById('resultContainer');
-            resultContainer.innerHTML = `
-                <h2>Your Trip Details</h2>
-                <p>Destination: ${goingTo}</p>
-                <p>Dates: ${dates}</p>
-                <p>Adults: ${adults}</p>
-                <p>Children: ${children}</p>
-                <p>Total Price: $${totalPrice}</p>
-                <!-- You can add more details or fetch results from a backend here -->
-            `;
-
-            const response = await fetch(`http://localhost:3000/weather?city=${goingTo}`);
-            const weatherData = await response.json();
-
-            const weatherResultContainer = document.getElementById('weatherResultContainer');
-            weatherResultContainer.innerHTML = `
-                <h2>Weather Information</h2>
-                <p>Condition: ${weatherData.condition}</p>
-                <p>Temperature: ${weatherData.temperature.toFixed(2)}°C</p>
-                <p>Clouds: ${weatherData.clouds}%</p>
-            `;
-        }
         async function addTour() {
-    const tourName = document.getElementById('tourName').value;
-    const tourCost = document.getElementById('tourCost').value;
-    const tourDestination = document.getElementById('tourDestination').value;
+            const tourName = document.getElementById('tourName').value;
+            const tourCost = document.getElementById('tourCost').value;
+            const tourDestination = document.getElementById('tourDestination').value;
 
-    const response = await fetch('/tours', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            name: tourName,
-            cost: tourCost,
-            destination: tourDestination,
-        }),
-    });
+            const response = await fetch('/tours', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: tourName,
+                    cost: tourCost,
+                    destination: tourDestination,
+                }),
+            });
 
-    const result = await response.json();
-
-    // Display a success message or handle errors as needed
-    console.log(result);
-
-    // After adding a tour, you can update the UI or perform other actions
-}
+            const result = await response.json();
+        }
     </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+
 </body>
 </html>

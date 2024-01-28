@@ -2,25 +2,25 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const axios = require('axios');
+const travelRoutes = require('./routes/travelRoutes');
 
 const app = express();
 const port = 3000;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Dummy data for tours (you can replace it with a database)
+
 let tours = [
-    { id: 1, name: 'Explore Machu Picchu', cost: 1500, destination: 'Machu Picchu' },
-    { id: 2, name: 'Safari Adventure in Serengeti', cost: 2000, destination: 'Serengeti National Park' },
-    { id: 3, name: 'Cruise the Greek Islands', cost: 2500, destination: 'Greek Islands' },
-    { id: 4, name: 'Trekking in the Himalayas', cost: 1800, destination: 'Himalayas' },
-    { id: 5, name: 'Cultural Tour of Kyoto', cost: 1200, destination: 'Kyoto' },
+    { id: 1, name: 'Explore Machu Picchu', cost: 1500, destination: 'Machu', dates: '2024-03-01', adults: 2, children: 1},
+    { id: 2, name: 'Safari Adventure in Serengeti', cost: 2000, destination: 'Ngorongoro', dates: '2024-05-15', adults: 1, children: 0},
+    { id: 3, name: 'Cruise the Greek Islands', cost: 2500, destination: 'Crete', dates: '2024-02-01', adults: 3, children: 0},
+    { id: 4, name: 'Trekking in the Himalayas', cost: 1800, destination: 'Himalaya', dates: '2024-09-25', adults: 2, children: 3},
+    { id: 5, name: 'Cultural Tour of Kyoto', cost: 1200, destination: 'Kyoto', dates: '2024-03-09', adults: 4, children: 0},
 ];
 
-
+app.use('/travelagency', travelRoutes);
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -66,7 +66,18 @@ app.get('/api/tours', (req, res) => {
     res.json(tours);
 });
 
-// Start the server
+// Sample server-side code for fetching tour details by ID
+app.get('/api/tours/:id', (req, res) => {
+    const tourId = parseInt(req.params.id);
+    const tour = tours.find(tour => tour.id === tourId);
+
+    if (tour) {
+        res.json(tour);
+    } else {
+        res.status(404).json({ error: 'Tour not found' });
+    }
+});
+
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 }); 

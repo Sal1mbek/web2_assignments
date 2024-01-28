@@ -6,7 +6,10 @@
     <title>Tours List</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="R.png" type="image/x-icon">
 </head>
+
+
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <a class="navbar-brand" href="#">Travel Agency By Salimbbek</a>
@@ -26,63 +29,99 @@
         </div>
     </nav>
 
-    <!-- Container for Tour List -->
     <div class="container mt-5">
         <h1>Available Tours</h1>
 
-        <ul id="tourList" class="list-group">
+        <div class="row" id="tourList">
             <!-- Tours will be dynamically added here -->
-        </ul>
-
-        <div id="resultContainer" style="margin-top: 20px;"></div>
-
-        <div id="weatherResultContainer" style="margin-top: 20px;"></div>
-
+        </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <div class="container mt-5" id="editTourForm" style="display: none;">
+        <h2>Edit Tour</h2>
+        <form onsubmit="event.preventDefault(); submitEditedTour();">
+            <input type="hidden" id="tourId">
+            <div class="form-group">
+                <label for="editName">Name:</label>
+                <input type="text" class="form-control" id="editName" required>
+            </div>
+            <div class="form-group">
+                <label for="editCost">Cost:</label>
+                <input type="number" class="form-control" id="editCost" required>
+            </div>
+            <div class="form-group">
+                <label for="editDestination">Destination:</label>
+                <input type="text" class="form-control" id="editDestination" required>
+            </div>
+            <div class="form-group">
+                <label for="editDates">Dates:</label>
+                <input type="text" class="form-control" id="editDates" required>
+            </div>
+            <div class="form-group">
+                <label for="editAdults">Adults:</label>
+                <input type="number" class="form-control" id="editAdults" required>
+            </div>
+            <div class="form-group">
+                <label for="editChildren">Children:</label>
+                <input type="number" class="form-control" id="editChildren" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="button" class="btn btn-secondary" onclick="cancelEdit()">Cancel</button>
+        </form>
+    </div>
+
 
     <script>
-        // Function to fetch and display tours
         async function fetchTours() {
             try {
                 const response = await fetch('/api/tours');
                 const tours = await response.json();
-
+    
                 const tourList = document.getElementById('tourList');
-                tourList.innerHTML = ''; // Clear existing tour list
-
-                // Iterate through tours and create list items
+    
                 tours.forEach(tour => {
-                    const listItem = document.createElement('li');
-                    listItem.className = 'list-group-item';
-                    listItem.innerHTML = `
-                        <h5>${tour.name}</h5>
-                        <p>Cost: $${tour.cost}</p>
-                        <p>Destination: ${tour.destination}</p>
-                        <button class="btn btn-primary" onclick="showTour(${JSON.stringify(tours)})">Show Tour</button>
+                    const card = document.createElement('div');
+                    card.className = 'col-md-4 mb-4';
+    
+                    card.innerHTML = `
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">${tour.name}</h5>
+                                <p class="card-text">Cost: $${tour.cost}</p>
+                                <p class="card-text">Destination: ${tour.destination}</p>
+                                <button class="btn btn-primary mr-2" onclick="showTour(${JSON.stringify(tour).replace(/"/g, '&quot;')})">Show Tour</button>
+                                <button class="btn btn-secondary" onclick="editTour(${tour.id})">Edit Tour</button>
+                            </div>
+                        </div>
+                        <div class="center">
+                            <div id="resultContainer" style="margin-top: 20px;"></div>
+                            <div id="weatherResultContainer" style="margin-top: 20px;"></div>
+                        </div>
                     `;
-                    tourList.appendChild(listItem);
+                    tourList.appendChild(card);
                 });
             } catch (error) {
                 console.error('Error fetching tours:', error.message);
             }
         }
-
-        // Function to show tour details
-        async function showTour(tours) {
+    
+        async function showTour(tour) {
             try {
                 const resultContainer = document.getElementById('resultContainer');
+    
+                const totalCost = (tour.cost * tour.adults) + (tour.cost / 2 * tour.children);
                 resultContainer.innerHTML = `
                     <h2>Your Trip Details</h2>
                     <p>Destination: ${tour.destination}</p>
+                    <p>Dates: ${tour.dates}</p>
+                    <p>Adults: ${tour.adults}</p>
+                    <p>Children: ${tour.children}</p>
+                    <p>Total Cost: $${totalCost}</p>
                 `;
-
+    
                 const response = await fetch(`http://localhost:3000/weather?city=${tour.destination}`);
                 const weatherData = await response.json();
-
+    
                 const weatherResultContainer = document.getElementById('weatherResultContainer');
                 weatherResultContainer.innerHTML = `
                     <h2>Weather Information</h2>
@@ -95,8 +134,73 @@
             }
         }
 
-        // Fetch tours when the page loads
+        async function editTour(tourId) {
+            try {
+                const response = await fetch(`/api/tours/${tourId}`);
+                const tour = await response.json();
+
+                // Populate the form fields with the tour details
+                document.getElementById('tourId').value = tour.id;
+                document.getElementById('editName').value = tour.name;
+                document.getElementById('editCost').value = tour.cost;
+                document.getElementById('editDestination').value = tour.destination;
+                document.getElementById('editDates').value = tour.dates;
+                document.getElementById('editAdults').value = tour.adults;
+                document.getElementById('editChildren').value = tour.children;
+
+                // Hide the tour list and show the edit form
+                document.getElementById('tourList').style.display = 'none';
+                document.getElementById('editTourForm').style.display = 'block';
+            } catch (error) {
+                console.error('Error fetching tour details for editing:', error.message);
+            }
+        }
+
+        function cancelEdit() {
+            // Show the tour list and hide the edit form
+            document.getElementById('tourList').style.display = 'block';
+            document.getElementById('editTourForm').style.display = 'none';
+        }
+
+        async function submitEditedTour() {
+            try {
+                const tourId = document.getElementById('tourId').value;
+                const updatedTour = {
+                    name: document.getElementById('editName').value,
+                    cost: document.getElementById('editCost').value,
+                    destination: document.getElementById('editDestination').value,
+                    dates: document.getElementById('editDates').value,
+                    adults: document.getElementById('editAdults').value,
+                    children: document.getElementById('editChildren').value
+                };
+
+                // Send a PUT request to update the tour details
+                const response = await fetch(`/api/tours/${tourId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updatedTour)
+                });
+
+                if (response.ok) {
+                    alert('Tour updated successfully');
+                    location.reload();
+                } else {
+                    const errorMessage = await response.text();
+                    alert(`Failed to update tour: ${errorMessage}`);
+                }
+            } catch (error) {
+                console.error('Error updating tour:', error.message);
+            }
+        }
+
         fetchTours();
     </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
 </body>
 </html>
